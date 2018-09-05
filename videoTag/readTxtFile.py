@@ -4,6 +4,7 @@ import ast
 directory = '../Videos/segmentado/comprimido'
 a = []
 
+
 for filename in sorted(os.listdir(directory)):
     if filename.endswith(".txt"):
         fileN = directory + "/" + filename
