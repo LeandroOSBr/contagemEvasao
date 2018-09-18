@@ -9,9 +9,11 @@ import cv2
 import time
 #from tkinter import messagebox
 import time
+
+rootDir = 'C:\\Apps\\MESTRADO\\Videos\\'
  
 #captura = cv2.VideoCapture(0)
-captura = cv2.VideoCapture('C:\\tmp\\PROJETO\\videos\\20055\\W20180718-070154N3N240.avi')
+captura = cv2.VideoCapture(rootDir + 'HP.9. Pular a catraca.avi')
 length = int(captura.get(cv2.CAP_PROP_FRAME_COUNT))
 fps = captura.get(cv2.CAP_PROP_FPS)
 originalFps = fps
@@ -66,7 +68,7 @@ while(1):
             print(startRecord)
             startRecord = True
             strTime = time.strftime("%Y%m%d-%H%M%S")
-            recordFile = 'C:\\tmp\\PROJETO\\videos\\20055\\dataset\\dataset_' + strTime + '.avi'
+            recordFile = rootDir + 'dataset\\ds_' + strTime + '.avi'
             out = cv2.VideoWriter(recordFile,cv2.VideoWriter_fourcc(*'XVID'),int(originalFps),(newW,newH))
             out.write(roiZoom)
             print("Writing in file out: ",actualFrame)
