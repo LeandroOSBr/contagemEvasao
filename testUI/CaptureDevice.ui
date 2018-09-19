@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1048</width>
-    <height>753</height>
+    <width>1049</width>
+    <height>831</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -18,7 +18,7 @@
     <rect>
      <x>20</x>
      <y>20</y>
-     <width>711</width>
+     <width>691</width>
      <height>711</height>
     </rect>
    </property>
@@ -35,11 +35,14 @@
    <property name="text">
     <string>Abrir Arquivo</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+O</string>
+   </property>
   </widget>
   <widget class="QCheckBox" name="checkEixoX">
    <property name="geometry">
     <rect>
-     <x>740</x>
+     <x>730</x>
      <y>50</y>
      <width>101</width>
      <height>17</height>
@@ -52,7 +55,7 @@
   <widget class="QCheckBox" name="checkBox_2">
    <property name="geometry">
     <rect>
-     <x>740</x>
+     <x>730</x>
      <y>80</y>
      <width>70</width>
      <height>17</height>
@@ -82,17 +85,147 @@
     </rect>
    </property>
   </widget>
-  <widget class="QPushButton" name="btnOpenFile">
+  <widget class="QPlainTextEdit" name="txtInfoVideo">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="geometry">
     <rect>
      <x>730</x>
-     <y>120</y>
+     <y>110</y>
      <width>311</width>
-     <height>41</height>
+     <height>81</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>MS Sans Serif</family>
+    </font>
+   </property>
+   <property name="plainText">
+    <string/>
+   </property>
+  </widget>
+  <widget class="Line" name="line">
+   <property name="geometry">
+    <rect>
+     <x>720</x>
+     <y>0</y>
+     <width>16</width>
+     <height>751</height>
+    </rect>
+   </property>
+   <property name="orientation">
+    <enum>Qt::Vertical</enum>
+   </property>
+  </widget>
+  <widget class="Line" name="line_2">
+   <property name="geometry">
+    <rect>
+     <x>1</x>
+     <y>745</y>
+     <width>721</width>
+     <height>10</height>
+    </rect>
+   </property>
+   <property name="orientation">
+    <enum>Qt::Horizontal</enum>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="btnNextFrame">
+   <property name="geometry">
+    <rect>
+     <x>450</x>
+     <y>780</y>
+     <width>75</width>
+     <height>23</height>
     </rect>
    </property>
    <property name="text">
-    <string>Carrega Arquivo</string>
+    <string>&gt;</string>
+   </property>
+   <property name="shortcut">
+    <string>N</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="btnNextFrames">
+   <property name="geometry">
+    <rect>
+     <x>530</x>
+     <y>780</y>
+     <width>75</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>&gt;&gt;</string>
+   </property>
+   <property name="shortcut">
+    <string>Shift+N</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="btnPreviusFrame">
+   <property name="geometry">
+    <rect>
+     <x>210</x>
+     <y>780</y>
+     <width>75</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>&lt;</string>
+   </property>
+   <property name="shortcut">
+    <string>P</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="btnPreviusFrames">
+   <property name="geometry">
+    <rect>
+     <x>130</x>
+     <y>780</y>
+     <width>75</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>&lt;&lt;</string>
+   </property>
+   <property name="shortcut">
+    <string>Shift+P</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="btnPlay">
+   <property name="geometry">
+    <rect>
+     <x>290</x>
+     <y>780</y>
+     <width>75</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Play</string>
+   </property>
+   <property name="shortcut">
+    <string>Shift+Space</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="btnPause">
+   <property name="geometry">
+    <rect>
+     <x>370</x>
+     <y>780</y>
+     <width>75</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Pause</string>
+   </property>
+   <property name="shortcut">
+    <string>Space</string>
    </property>
   </widget>
  </widget>

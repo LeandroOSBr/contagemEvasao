@@ -1,19 +1,31 @@
 import sys
 import cv2
 import os.path
+import time
 
 from PyQt5.QtCore import QTimer, pyqtSlot
 from PyQt5.QtGui import QImage, QPixmap
 from PyQt5.QtWidgets import QApplication, QDialog, QFileDialog
 from PyQt5.uic import loadUi
 
-my_path = os.path.abspath(os.path.dirname(__file__))
-print(my_path)
+rootDir = os.path.abspath(os.path.dirname(__file__))
+ 
+record = False
+startRecord = False
+zoom = 1
+printText = True
+
+fileAnnotation = rootDir + 'dataset\\' + 'dataset.csv'
+
+
 
 class CaptureDevice(QDialog):
+
+    pause = 0
+
     def __init__(self):
         super(CaptureDevice, self).__init__()
-        uiFile = my_path + '\\CaptureDevice.ui'
+        uiFile = rootDir + '\\CaptureDevice.ui'
         loadUi(uiFile, self)
 
         # Variaveis
@@ -22,7 +34,12 @@ class CaptureDevice(QDialog):
 
         # Declara Buttons
         self.btnCam.clicked.connect(self.start_stop_webcam)
-        self.btnOpenFile.clicked.connect(self.openFileNameDialog) 
+        self.btnPlay.clicked.connect(self.videoPlay)
+        self.btnPause.clicked.connect(self.videoPause)
+        self.btnNextFrame.clicked.connect(self.videoNextFrame)
+        self.btnNextFrames.clicked.connect(self.videoNextFrames)
+        self.btnPreviusFrame.clicked.connect(self.videoPreviusFrame)
+        self.btnPreviusFrames.clicked.connect(self.videoPreviusFrames)
 
     def start_stop_webcam(self):
 
@@ -32,6 +49,13 @@ class CaptureDevice(QDialog):
             self.capture = cv2.VideoCapture(self.openFileNameDialog())
             self.capture.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
             self.capture.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
+            self.length = int(self.capture.get(cv2.CAP_PROP_FRAME_COUNT))
+            self.fps = self.capture.get(cv2.CAP_PROP_FPS)
+            self.originalFps = self.fps
+            self.speedVideo = 1/self.fps
+
+            
+
             self.start_time()
             self.btnCam.setText("STOP CAM")
         else:
@@ -44,13 +68,50 @@ class CaptureDevice(QDialog):
 
     def update_frame(self):
         
-        ret, self.imagem = self.capture.read()
+        if pause == 0:
+            time.sleep(self.speedVideo)
+            ret, imagem = self.capture.read()  
+
+        self.actualFrame = self.capture.get(cv2.CAP_PROP_POS_FRAMES)
+        self.height, self.width, self.channels = imagem.shape
+        self.cropSizeLRHeight = 1 - int(1 * self.height)
+        self.cropSizeLRHWidth = 1 - int(0.4 * self.width)
+        self.cropSizeRLHeight = int(0.85 * self.height) - 1
+        self.cropSizeRLHWidth = int(1 * self.width) - 1
+        self.roiCropped = imagem[self.cropSizeLRHeight:self.cropSizeRLHeight, self.cropSizeLRHWidth:self.cropSizeRLHWidth]
+        self.h, self.w, self.c = self.roiCropped.shape
+        #zoom = cv2.resize(cropped, (h*4, w*4), interpolation = cv2.INTER_CUBIC)
+        self.roiZoom = cv2.resize(self.roiCropped, (self.h*zoom, self.w*zoom), interpolation = cv2.INTER_LANCZOS4)
+
+        self.font = cv2.FONT_HERSHEY_SIMPLEX
+        self.bottomLeftCornerOfText = (10,10)
+        self.fontScale = 0.125*zoom
+        self.fontColor = (255,255,255)
+        self.lineType = 0
+        self.newH, self.newW, self.newC = self.roiZoom.shape
+
+        text = ''
+        if printText:
+            text = 'FPS: ' + str(self.fps) + '('+ str(self.originalFps) + ')' + '\nActual Frame: ' + str(self.actualFrame) + '/' + str(self.length) + ' \nH: ' + str(self.newH) + ', W: ' + str(self.newW)
+        if record:
+            text += '\nREC'    
+        #for i, line in enumerate(text.split('\n')):
+            #cv2.putText(self.roiZoom,line,self.bottomLeftCornerOfText, self.font,self.fontScale, self.fontColor, self.lineType)
+            #self.bottomLeftCornerOfText = (10,self.bottomLeftCornerOfText[1] + 30)
+
+
+        #self.txtInfoVideo.insertPlainText(text)
+        self.txtInfoVideo.setPlainText(text)
+
+
+
+
         if ret == True:
 
             if self.checkEixoX.isChecked():
                 self.limited_area()
 
-            self.set_display_image(self.imagem)
+            self.set_display_image(self.roiZoom)
 
     def set_display_image(self, frame):
 
@@ -79,9 +140,77 @@ class CaptureDevice(QDialog):
             print(fileName)
         return fileName
 
+    def videoPlay(self):
+        print("Play Press")
+
+
+    def videoPause(self):
+        print("videoPause")
+        if self.pause == 1:
+            self.pause = 0
+            pause = self.pause
+        else:
+            self.pause = 1
+            pause = self.pause
+
+    def videoNextFrame(self):
+        print("videoNextFrame")
+
+    def videoNextFrames(self):
+        print("videoNextFrames")
+
+    def videoPreviusFrame(self):
+        print("videoPreviusFrame")
+
+    def videoPreviusFrames(self):
+        print("videoPreviusFrames")
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     janela = CaptureDevice()
     janela.show()
     sys.exit(app.exec_())
+
+    k = cv2.waitKey(30) & 0xff
+    print(k)
+    if k == 27:
+        #break
+        sys.exit(app.exec_())
+    elif k == 32:
+        print(k)
+        if pause == 1:
+            pause = 0
+        else:
+            pause = 1
+    elif k == 52:
+        #NumPad #4
+        print(k)
+        perFrames = 40
+        if actualFrame > perFrames:
+            captura.set(cv2.CAP_PROP_POS_FRAMES,actualFrame - perFrames)
+            cv2.imshow("Video", roiZoom)
+    elif k == 45:
+        #NumPad (-)
+        print(k)
+        if fps > 0:
+            fps -= 1
+    elif k == 43:
+        #NumPad (+)
+        print(k)
+        fps += 1
+    elif k == 114:
+        #R
+        print(k)
+        if record:
+            record = False
+            startRecord = False
+            out.release()
+            print("Out released")
+            fps = fps*2
+            a = open(fileAnnotation,"a") 
+            response = input("Por favor, informe a classe: ")
+            txtFile = 'Pula-Catraca' + ';' + fr
+            a.write(txtFile)
+            a.close
+        else:
+            record = True
