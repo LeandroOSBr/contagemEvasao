@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Dialog</string>
+   <string>Video Annotation Tool</string>
   </property>
   <widget class="QLabel" name="lbImagem">
    <property name="geometry">
@@ -33,7 +33,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>START CAM</string>
+    <string>Abrir Arquivo</string>
    </property>
   </widget>
   <widget class="QCheckBox" name="checkEixoX">

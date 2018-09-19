@@ -1,16 +1,20 @@
 import sys
 import cv2
+import os.path
 
 from PyQt5.QtCore import QTimer, pyqtSlot
 from PyQt5.QtGui import QImage, QPixmap
 from PyQt5.QtWidgets import QApplication, QDialog, QFileDialog
 from PyQt5.uic import loadUi
 
+my_path = os.path.abspath(os.path.dirname(__file__))
+print(my_path)
 
 class CaptureDevice(QDialog):
     def __init__(self):
         super(CaptureDevice, self).__init__()
-        loadUi('C:\\Apps\\MESTRADO\\contagemEvasao\\testUI\\CaptureDevice.ui', self)
+        uiFile = my_path + '\\CaptureDevice.ui'
+        loadUi(uiFile, self)
 
         # Variaveis
         self.timer = QTimer(self)
@@ -70,7 +74,7 @@ class CaptureDevice(QDialog):
     def openFileNameDialog(self):    
         options = QFileDialog.Options()
         options |= QFileDialog.DontUseNativeDialog
-        fileName, _ = QFileDialog.getOpenFileName(self,"QFileDialog.getOpenFileName()", "","All Files (*);;Python Files (*.py)", options=options)
+        fileName, _ = QFileDialog.getOpenFileName(self,"QFileDialog.getOpenFileName()", "","All Files (*);;Video Files (*.avi)", options=options)
         if fileName:
             print(fileName)
         return fileName
