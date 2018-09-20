@@ -46,8 +46,8 @@ class CaptureDevice(QDialog):
             #self.capture = cv2.VideoCapture(0)
             #self.capture = cv2.VideoCapture('C:\\Apps\\MESTRADO\\Videos\\HP.9. Pular a catraca.avi')
             self.capture = cv2.VideoCapture(self.openFileNameDialog())
-            self.capture.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
-            self.capture.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
+            #self.capture.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
+            #self.capture.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
             self.length = int(self.capture.get(cv2.CAP_PROP_FRAME_COUNT))
             self.fps = self.capture.get(cv2.CAP_PROP_FPS)
             self.originalFps = self.fps
@@ -68,8 +68,11 @@ class CaptureDevice(QDialog):
     def update_frame(self):
         
         if pause == 0:
-            time.sleep(self.speedVideo)   
+            self.txtInfoSpeed.setPlainText("Speed per Frame: " + str(self.speedVideo))
+            time.sleep(self.speedVideo)
             self.ret, self.imagemCap = self.capture.read()
+            self.txeInfoFrame.append("Frame # " + str(self.capture.get(cv2.CAP_PROP_POS_FRAMES)))
+
             self.btnPause.setStyleSheet("background-color: #e3e3e3")
         else:
             self.btnPause.setStyleSheet("background-color: blue")  

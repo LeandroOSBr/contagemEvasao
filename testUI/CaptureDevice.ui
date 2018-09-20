@@ -228,6 +228,37 @@
     <string>Space</string>
    </property>
   </widget>
+  <widget class="QPlainTextEdit" name="txtInfoSpeed">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="geometry">
+    <rect>
+     <x>730</x>
+     <y>193</y>
+     <width>311</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>MS Sans Serif</family>
+    </font>
+   </property>
+   <property name="plainText">
+    <string/>
+   </property>
+  </widget>
+  <widget class="QTextEdit" name="txeInfoFrame">
+   <property name="geometry">
+    <rect>
+     <x>730</x>
+     <y>230</y>
+     <width>311</width>
+     <height>161</height>
+    </rect>
+   </property>
+  </widget>
  </widget>
  <resources/>
  <connections/>
