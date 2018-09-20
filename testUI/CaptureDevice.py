@@ -17,11 +17,10 @@ printText = True
 
 fileAnnotation = rootDir + 'dataset\\' + 'dataset.csv'
 
+pause = 0
 
 
 class CaptureDevice(QDialog):
-
-    pause = 0
 
     def __init__(self):
         super(CaptureDevice, self).__init__()
@@ -30,7 +29,7 @@ class CaptureDevice(QDialog):
 
         # Variaveis
         self.timer = QTimer(self)
-        self.imagem = None
+        #self.imagem = None
 
         # Declara Buttons
         self.btnCam.clicked.connect(self.start_stop_webcam)
@@ -69,16 +68,23 @@ class CaptureDevice(QDialog):
     def update_frame(self):
         
         if pause == 0:
-            time.sleep(self.speedVideo)
-            ret, imagem = self.capture.read()  
+            time.sleep(self.speedVideo)   
+            #TODO Fix jumping frames!         
+            #self.capture.set(cv2.CAP_PROP_POS_FRAMES,cv2.CAP_PROP_POS_FRAMES-1)
+            print("Actual Frame before read() is: ",self.capture.get(cv2.CAP_PROP_POS_FRAMES))
+            self.ret, self.imagemCap = self.capture.read()
+            print("Actual Frame after read() is: ",self.capture.get(cv2.CAP_PROP_POS_FRAMES))
+            self.btnPause.setStyleSheet("background-color: #e3e3e3")
+        else:
+            self.btnPause.setStyleSheet("background-color: blue")  
 
-        self.actualFrame = self.capture.get(cv2.CAP_PROP_POS_FRAMES)
-        self.height, self.width, self.channels = imagem.shape
+        self.actualFrame = self.capture.get(cv2.CAP_PROP_POS_FRAMES)        
+        self.height, self.width, self.channels = self.imagemCap.shape
         self.cropSizeLRHeight = 1 - int(1 * self.height)
         self.cropSizeLRHWidth = 1 - int(0.4 * self.width)
         self.cropSizeRLHeight = int(0.85 * self.height) - 1
         self.cropSizeRLHWidth = int(1 * self.width) - 1
-        self.roiCropped = imagem[self.cropSizeLRHeight:self.cropSizeRLHeight, self.cropSizeLRHWidth:self.cropSizeRLHWidth]
+        self.roiCropped = self.imagemCap[self.cropSizeLRHeight:self.cropSizeRLHeight, self.cropSizeLRHWidth:self.cropSizeRLHWidth]
         self.h, self.w, self.c = self.roiCropped.shape
         #zoom = cv2.resize(cropped, (h*4, w*4), interpolation = cv2.INTER_CUBIC)
         self.roiZoom = cv2.resize(self.roiCropped, (self.h*zoom, self.w*zoom), interpolation = cv2.INTER_LANCZOS4)
@@ -106,24 +112,25 @@ class CaptureDevice(QDialog):
 
 
 
-        if ret == True:
+        if self.ret == True:
 
             if self.checkEixoX.isChecked():
                 self.limited_area()
 
             self.set_display_image(self.roiZoom)
+            #cv2.imshow("Video", self.roiZoom)
 
-    def set_display_image(self, frame):
+    def set_display_image(self, framed):
 
         qtimg = QImage.Format_Indexed8
 
-        if len(frame.shape) == 3:  # rows, cols, chanels
-            if (frame.shape[2]) == 4:  # chanels == RGBA
+        if len(framed.shape) == 3:  # rows, cols, chanels
+            if (framed.shape[2]) == 4:  # chanels == RGBA
                 qtimg = QImage.Format_RGBA888
             else:
                 qtimg = QImage.Format_RGB888
 
-        tmp = QImage(frame, frame.shape[1], frame.shape[0], frame.strides[0],
+        tmp = QImage(framed, framed.shape[1], framed.shape[0], framed.strides[0],
                      qtimg)
         tmp = tmp.rgbSwapped()
 
@@ -145,13 +152,12 @@ class CaptureDevice(QDialog):
 
 
     def videoPause(self):
+        global pause
         print("videoPause")
-        if self.pause == 1:
-            self.pause = 0
-            pause = self.pause
+        if pause == 1:
+            pause = 0            
         else:
-            self.pause = 1
-            pause = self.pause
+            pause = 1            
 
     def videoNextFrame(self):
         print("videoNextFrame")
