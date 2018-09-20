@@ -69,11 +69,7 @@ class CaptureDevice(QDialog):
         
         if pause == 0:
             time.sleep(self.speedVideo)   
-            #TODO Fix jumping frames!         
-            #self.capture.set(cv2.CAP_PROP_POS_FRAMES,cv2.CAP_PROP_POS_FRAMES-1)
-            print("Actual Frame before read() is: ",self.capture.get(cv2.CAP_PROP_POS_FRAMES))
             self.ret, self.imagemCap = self.capture.read()
-            print("Actual Frame after read() is: ",self.capture.get(cv2.CAP_PROP_POS_FRAMES))
             self.btnPause.setStyleSheet("background-color: #e3e3e3")
         else:
             self.btnPause.setStyleSheet("background-color: blue")  
