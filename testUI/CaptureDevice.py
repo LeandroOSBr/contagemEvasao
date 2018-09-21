@@ -14,7 +14,7 @@ record = False
 startRecord = False
 zoom = 1
 printText = True
-
+# ##
 fileAnnotation = rootDir + 'dataset\\' + 'dataset.csv'
 
 pause = 0
