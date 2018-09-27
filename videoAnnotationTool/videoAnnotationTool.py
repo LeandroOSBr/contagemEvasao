@@ -13,16 +13,16 @@ import time
 import tkinter as tk
 import tkinter.ttk as ttk
 
-rootDir = 'C:\\Apps\\MESTRADO\\Videos\\'
+rootDir = 'C:\\tmp\PROJETO\\videos\\Amostragem de Evasões em Veículos\\HP\\'
  
 #captura = cv2.VideoCapture(0)
-captura = cv2.VideoCapture(rootDir + 'HP.9. Pular a catraca.avi')
+captura = cv2.VideoCapture(rootDir + '9. Pular a catraca.avi')
 length = int(captura.get(cv2.CAP_PROP_FRAME_COUNT))
 fps = captura.get(cv2.CAP_PROP_FPS)
 originalFps = fps
 record = False
 startRecord = False
-zoom = 4
+zoom = 1
 printText = False
 
 fileAnnotation = rootDir + 'dataset\\' + 'dataset.csv'
@@ -40,7 +40,7 @@ while(1):
     cropSizeLRHeight = 1 - int(1 * height)
     cropSizeLRHWidth = 1 - int(0.5 * width)
     cropSizeRLHeight = int(0.75 * height) - 1
-    cropSizeRLHWidth = int(0.85 * width) - 1
+    cropSizeRLHWidth = int(0.95 * width) - 1
     roiCropped = frame[cropSizeLRHeight:cropSizeRLHeight, cropSizeLRHWidth:cropSizeRLHWidth]
     h, w, c = roiCropped.shape
     #zoom = cv2.resize(cropped, (h*4, w*4), interpolation = cv2.INTER_CUBIC)
@@ -122,10 +122,10 @@ while(1):
             print("Out released")
             fps = fps*2
             a = open(fileAnnotation,"a") 
-            response = input("Por favor, informe a classe: ")
-            txtFile = 'Pula-Catraca' + ';' + fr
-            a.write(txtFile)
-            a.close
+            #response = input("Por favor, informe a classe: ")
+            #txtFile = 'Pula-Catraca' + ';' + fr
+            #a.write(txtFile)
+            #a.close
         else:
             record = True
  
