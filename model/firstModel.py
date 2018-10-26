@@ -6,7 +6,7 @@ import numpy as np
 
 
 # image specification
-img_rows,img_cols,img_depth=51,51,12
+img_rows,img_cols,img_depth=112,112,12
 
 # Training data
 X_tr=[]           # variable to store entire dataset
