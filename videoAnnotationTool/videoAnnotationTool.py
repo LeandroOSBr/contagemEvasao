@@ -16,13 +16,13 @@ import tkinter.ttk as ttk
 rootDir = 'C:\\Apps\\MESTRADO\\Videos\\'
  
 #captura = cv2.VideoCapture(0)
-captura = cv2.VideoCapture(rootDir + 'HP.9. Pular a catraca.avi')
+captura = cv2.VideoCapture(rootDir + 'VR.7. Pular e passar por baixo da catraca.avi')
 length = int(captura.get(cv2.CAP_PROP_FRAME_COUNT))
 fps = captura.get(cv2.CAP_PROP_FPS)
 originalFps = fps
 record = False
 startRecord = False
-zoom = 4
+zoom = 2
 printText = False
 
 fileAnnotation = rootDir + 'dataset\\' + 'dataset.csv'
@@ -38,9 +38,11 @@ while(1):
 
     height, width, channels = frame.shape
     cropSizeLRHeight = 1 - int(1 * height)
-    cropSizeLRHWidth = 1 - int(0.5 * width)
+#    cropSizeLRHWidth = 1 - int(0.5 * width)
+    cropSizeLRHWidth = 1 - int(0.4 * width)
     cropSizeRLHeight = int(0.75 * height) - 1
-    cropSizeRLHWidth = int(0.85 * width) - 1
+#    cropSizeRLHWidth = int(0.85 * width) - 1
+    cropSizeRLHWidth = int(0.95 * width) - 1
     roiCropped = frame[cropSizeLRHeight:cropSizeRLHeight, cropSizeLRHWidth:cropSizeRLHWidth]
     h, w, c = roiCropped.shape
     #zoom = cv2.resize(cropped, (h*4, w*4), interpolation = cv2.INTER_CUBIC)
@@ -99,7 +101,7 @@ while(1):
     elif k == 52:
         #NumPad #4
         print(k)
-        perFrames = 40
+        perFrames = 20
         if actualFrame > perFrames:
             captura.set(cv2.CAP_PROP_POS_FRAMES,actualFrame - perFrames)
             cv2.imshow("Video", roiZoom)
@@ -123,9 +125,15 @@ while(1):
             fps = fps*2
             a = open(fileAnnotation,"a") 
             response = input("Por favor, informe a classe: ")
-            txtFile = 'Pula-Catraca' + ';' + fr
-            a.write(txtFile)
-            a.close
+            if response == 's':
+                txtFile = '\nSimPulouCatraca' + ';' + fr
+                a.write(txtFile)
+                a.close
+            elif response == 'n':
+                txtFile = '\nNaoPulouCatraca' + ';' + fr
+                a.write(txtFile)
+                a.close
+            
         else:
             record = True
  

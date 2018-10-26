@@ -18,6 +18,8 @@ printText = True
 fileAnnotation = rootDir + 'dataset\\' + 'dataset.csv'
 
 pause = 0
+speedVideo = 0
+fps = 100
 
 
 class CaptureDevice(QDialog):
@@ -32,52 +34,66 @@ class CaptureDevice(QDialog):
         #self.imagem = None
 
         # Declara Buttons
-        self.btnCam.clicked.connect(self.start_stop_webcam)
+        self.btnCam.clicked.connect(self.openVideo)
         self.btnPlay.clicked.connect(self.videoPlay)
         self.btnPause.clicked.connect(self.videoPause)
         self.btnNextFrame.clicked.connect(self.videoNextFrame)
         self.btnNextFrames.clicked.connect(self.videoNextFrames)
         self.btnPreviusFrame.clicked.connect(self.videoPreviusFrame)
         self.btnPreviusFrames.clicked.connect(self.videoPreviusFrames)
+        self.hsrSpeed.valueChanged.connect(self.sliderSpeedMoved)
 
-    def start_stop_webcam(self):
+        self.hsrSpeed.setMinimum(-5)
+        self.hsrSpeed.setMaximum(10)
+        self.hsrSpeed.setValue(0)
+        #self.hsrSpeed.value()
 
-        if self.btnCam.text() == "START CAM":
+    def openVideo(self):
+
+        if self.btnCam.text() == "Abrir Arquivo":  
+            global speedVideo 
+            global fps         
             #self.capture = cv2.VideoCapture(0)
             #self.capture = cv2.VideoCapture('C:\\Apps\\MESTRADO\\Videos\\HP.9. Pular a catraca.avi')
             self.capture = cv2.VideoCapture(self.openFileNameDialog())
             #self.capture.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
             #self.capture.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
             self.length = int(self.capture.get(cv2.CAP_PROP_FRAME_COUNT))
-            self.fps = self.capture.get(cv2.CAP_PROP_FPS)
-            self.originalFps = self.fps
-            self.speedVideo = 1/self.fps
+            fps = self.capture.get(cv2.CAP_PROP_FPS)
+            self.originalFps = fps
+            speedVideo = 1/fps
 
             
 
             self.start_time()
             self.btnCam.setText("STOP CAM")
         else:
-            self.btnCam.setText("START CAM")
+            self.btnCam.setText("Abrir Arquivo")
             self.timer.stop()
 
     def start_time(self):
         self.timer.timeout.connect(self.update_frame)
-        self.timer.start(5)
+        self.timer.start(20)
 
     def update_frame(self):
-        
+        global speedVideo
+        global fps
         if pause == 0:
-            self.txtInfoSpeed.setPlainText("Speed per Frame: " + str(self.speedVideo))
-            time.sleep(self.speedVideo)
+            self.txtInfoSpeed.setPlainText("Speed per Frame: " + str(speedVideo))
+            self.txtInfoSpeed.setPlainText(str(speedVideo))
+            time.sleep(speedVideo)
             self.ret, self.imagemCap = self.capture.read()
+            if self.capture.get(cv2.CAP_PROP_POS_FRAMES) == self.capture.get(cv2.CAP_PROP_FRAME_COUNT)-1:
+                self.timer.stop()
+                self.btnCam.setText("Abrir Arquivo")
             self.txeInfoFrame.append("Frame # " + str(self.capture.get(cv2.CAP_PROP_POS_FRAMES)))
-
             self.btnPause.setStyleSheet("background-color: #e3e3e3")
+            self.txtSliderSpeed.setPlainText(str(self.hsrSpeed.value()))         
         else:
             self.btnPause.setStyleSheet("background-color: blue")  
 
-        self.actualFrame = self.capture.get(cv2.CAP_PROP_POS_FRAMES)        
+        self.txtSliderSpeed
+        self.actualFrame = self.capture.get(cv2.CAP_PROP_POS_FRAMES)
         self.height, self.width, self.channels = self.imagemCap.shape
         self.cropSizeLRHeight = 1 - int(1 * self.height)
         self.cropSizeLRHWidth = 1 - int(0.4 * self.width)
@@ -97,7 +113,7 @@ class CaptureDevice(QDialog):
 
         text = ''
         if printText:
-            text = 'FPS: ' + str(self.fps) + '('+ str(self.originalFps) + ')' + '\nActual Frame: ' + str(self.actualFrame) + '/' + str(self.length) + ' \nH: ' + str(self.newH) + ', W: ' + str(self.newW)
+            text = 'FPS: ' + str(fps) + '('+ str(self.originalFps) + ')' + '\nActual Frame: ' + str(self.actualFrame) + '/' + str(self.length) + ' \nH: ' + str(self.newH) + ', W: ' + str(self.newW)
         if record:
             text += '\nREC'    
         #for i, line in enumerate(text.split('\n')):
@@ -112,10 +128,6 @@ class CaptureDevice(QDialog):
 
 
         if self.ret == True:
-
-            if self.checkEixoX.isChecked():
-                self.limited_area()
-
             self.set_display_image(self.roiZoom)
             #cv2.imshow("Video", self.roiZoom)
 
@@ -128,9 +140,10 @@ class CaptureDevice(QDialog):
                 qtimg = QImage.Format_RGBA888
             else:
                 qtimg = QImage.Format_RGB888
+        else:
+            self.txeInfoFrame.append("len(framed.shape) =! 3")
 
-        tmp = QImage(framed, framed.shape[1], framed.shape[0], framed.strides[0],
-                     qtimg)
+        tmp = QImage(framed, framed.shape[1], framed.shape[0], framed.strides[0],qtimg)
         tmp = tmp.rgbSwapped()
 
         #self.lbFrames.setPixmap(QPixmap.fromImage(tmp))
@@ -145,6 +158,16 @@ class CaptureDevice(QDialog):
         if fileName:
             print(fileName)
         return fileName
+
+    def sliderSpeedMoved(self):
+        global speedVideo
+        global fps
+        print("Slider has Moved")
+        self.txtSliderSpeed.setPlainText(str(self.hsrSpeed.value()))
+        if self.hsrSpeed.value() > 0:
+            speedVideo = 1/fps / self.hsrSpeed.value()
+        elif self.hsrSpeed.value() < 0:
+            speedVideo = 1/fps * self.hsrSpeed.value() * -1
 
     def videoPlay(self):
         print("Play Press")
