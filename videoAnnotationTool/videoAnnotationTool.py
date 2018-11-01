@@ -16,21 +16,13 @@ import tkinter.ttk as ttk
 rootDir = 'C:\\tmp\PROJETO\\videos\\Amostragem de Evasões em Veículos\\HP\\'
  
 #captura = cv2.VideoCapture(0)
-<<<<<<< HEAD
 captura = cv2.VideoCapture(rootDir + 'VR.7. Pular e passar por baixo da catraca.avi')
-=======
-captura = cv2.VideoCapture(rootDir + '9. Pular a catraca.avi')
->>>>>>> f8c99068510a40c554d9f72fe116d5c1a1f9d282
 length = int(captura.get(cv2.CAP_PROP_FRAME_COUNT))
 fps = captura.get(cv2.CAP_PROP_FPS)
 originalFps = fps
 record = False
 startRecord = False
-<<<<<<< HEAD
 zoom = 2
-=======
-zoom = 1
->>>>>>> f8c99068510a40c554d9f72fe116d5c1a1f9d282
 printText = False
 
 fileAnnotation = rootDir + 'dataset\\' + 'dataset.csv'
@@ -49,10 +41,6 @@ while(1):
 #    cropSizeLRHWidth = 1 - int(0.5 * width)
     cropSizeLRHWidth = 1 - int(0.4 * width)
     cropSizeRLHeight = int(0.75 * height) - 1
-<<<<<<< HEAD
-#    cropSizeRLHWidth = int(0.85 * width) - 1
-=======
->>>>>>> f8c99068510a40c554d9f72fe116d5c1a1f9d282
     cropSizeRLHWidth = int(0.95 * width) - 1
     roiCropped = frame[cropSizeLRHeight:cropSizeRLHeight, cropSizeLRHWidth:cropSizeRLHWidth]
     h, w, c = roiCropped.shape
@@ -135,7 +123,6 @@ while(1):
             print("Out released")
             fps = fps*2
             a = open(fileAnnotation,"a") 
-<<<<<<< HEAD
             response = input("Por favor, informe a classe: ")
             if response == 's':
                 txtFile = '\nSimPulouCatraca' + ';' + fr
@@ -146,12 +133,6 @@ while(1):
                 a.write(txtFile)
                 a.close
             
-=======
-            #response = input("Por favor, informe a classe: ")
-            #txtFile = 'Pula-Catraca' + ';' + fr
-            #a.write(txtFile)
-            #a.close
->>>>>>> f8c99068510a40c554d9f72fe116d5c1a1f9d282
         else:
             record = True
  
