@@ -49,17 +49,18 @@ def startFileRecord():
     print("Writing in file out: ",actualFrame)
     fps = fps/2
 
-#rootDir = 'C:\\tmp\PROJETO\\videos\\Amostragem de Evasões em Veículos\\HP\\'
-rootDir = 'C:\\Apps\\MESTRADO\\Videos\\'
+rootDir = 'C:\\tmp\PROJETO\\videos\\Amostragem de Evasões em Veículos\\HP\\'
+#rootDir = 'C:\\Apps\\MESTRADO\\Videos\\'
  
 #captura = cv2.VideoCapture(0)
-captura = cv2.VideoCapture(rootDir + 'VR.7. Pular e passar por baixo da catraca.avi')
+#captura = cv2.VideoCapture(rootDir + 'VR.7. Pular e passar por baixo da catraca.avi')
+captura = cv2.VideoCapture(rootDir + '9. Pular a catraca.avi')
 length = int(captura.get(cv2.CAP_PROP_FRAME_COUNT))
 fps = captura.get(cv2.CAP_PROP_FPS)
 originalFps = fps
 record = False
 startRecord = False
-zoom = 2
+zoom = 4
 printText = False
 
 fileAnnotation = rootDir + 'dataset\\' + 'dataset.csv'
@@ -70,6 +71,7 @@ countRecordFrame = 0
 countRecordFrameMax = 10
 
 out = cv2.VideoWriter()
+k = 0
 
 while(1):
     speedVideo = 1/fps
@@ -105,20 +107,23 @@ while(1):
             cv2.putText(roiZoom,line,bottomLeftCornerOfText, font,fontScale, fontColor, lineType)
             bottomLeftCornerOfText = (10,bottomLeftCornerOfText[1] + 30)
 
+    # cv2.rectangle(roiZoom, (250,30), (450,200), (0,255,0), 5) # Draw retangle on image..
+    # TODO: Use a floating rectangle to assist in annotating the dataset.
     cv2.imshow("Video", roiZoom)
     #print(roiZoom.shape)
 
     if record:
         if startRecord:
-            global out
+            #global out
             print(startRecord)
             out.write(roiZoom)
-            print("Writing in file out: ",actualFrame)
-            countRecordFrame += 1
+            print("Writing in file out: ",actualFrame)            
             if countRecordFrame == countRecordFrameMax:
                 startRecord = False
                 record = False
                 endFileRecord()
+                countRecordFrame = 0
+            countRecordFrame += 1
         else:
             startFileRecord()
 
