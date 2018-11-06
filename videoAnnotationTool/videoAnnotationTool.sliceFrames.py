@@ -54,7 +54,7 @@ rootDir = 'C:\\tmp\PROJETO\\videos\\Amostragem de Evasões em Veículos\\HP\\'
  
 #captura = cv2.VideoCapture(0)
 #captura = cv2.VideoCapture(rootDir + 'VR.7. Pular e passar por baixo da catraca.avi')
-captura = cv2.VideoCapture(rootDir + '9. Pular a catraca.avi')
+captura = cv2.VideoCapture(rootDir + '13. Pular e passar por baixo da catraca.avi')
 length = int(captura.get(cv2.CAP_PROP_FRAME_COUNT))
 fps = captura.get(cv2.CAP_PROP_FPS)
 originalFps = fps
@@ -83,9 +83,9 @@ while(1):
 
     height, width, channels = frame.shape
     cropSizeLRHeight = 1 - int(1 * height)
-#    cropSizeLRHWidth = 1 - int(0.5 * width)
     cropSizeLRHWidth = 1 - int(0.4 * width)
-    cropSizeRLHeight = int(0.75 * height) - 1
+#    cropSizeLRHWidth = 1 - int(0.4 * width)
+    cropSizeRLHeight = int(0.85 * height) - 1
     cropSizeRLHWidth = int(0.95 * width) - 1
     roiCropped = frame[cropSizeLRHeight:cropSizeRLHeight, cropSizeLRHWidth:cropSizeRLHWidth]
     h, w, c = roiCropped.shape
