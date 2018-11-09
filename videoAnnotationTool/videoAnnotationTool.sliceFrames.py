@@ -60,7 +60,7 @@ fps = captura.get(cv2.CAP_PROP_FPS)
 originalFps = fps
 record = False
 startRecord = False
-zoom = 4
+zoom = 2
 printText = False
 
 fileAnnotation = rootDir + 'dataset\\' + 'dataset.csv'
@@ -76,21 +76,15 @@ k = 0
 while(1):
     speedVideo = 1/fps
     if pause == 0:
-        time.sleep(speedVideo)
+        #time.sleep(speedVideo)
         ret, frame = captura.read()
        
     actualFrame = captura.get(cv2.CAP_PROP_POS_FRAMES)
 
     height, width, channels = frame.shape
-    cropSizeLRHeight = 1 - int(1 * height)
-    cropSizeLRHWidth = 1 - int(0.4 * width)
-#    cropSizeLRHWidth = 1 - int(0.4 * width)
-    cropSizeRLHeight = int(0.85 * height) - 1
-    cropSizeRLHWidth = int(0.95 * width) - 1
-    roiCropped = frame[cropSizeLRHeight:cropSizeRLHeight, cropSizeLRHWidth:cropSizeRLHWidth]
-    h, w, c = roiCropped.shape
-    #zoom = cv2.resize(cropped, (h*4, w*4), interpolation = cv2.INTER_CUBIC)
-    roiZoom = cv2.resize(roiCropped, (h*zoom, w*zoom), interpolation = cv2.INTER_LANCZOS4)
+
+    roiZoom = frame
+    roiZoom = cv2.resize(frame, (width*zoom, height*zoom), interpolation=cv2.INTER_LANCZOS4)
 
     font = cv2.FONT_HERSHEY_SIMPLEX
     bottomLeftCornerOfText = (10,10)
@@ -116,7 +110,7 @@ while(1):
         if startRecord:
             #global out
             print(startRecord)
-            out.write(roiZoom)
+            out.write(roiZoom) 
             print("Writing in file out: ",actualFrame)            
             if countRecordFrame == countRecordFrameMax:
                 startRecord = False
@@ -131,8 +125,8 @@ while(1):
         # fourcc = cv2.VideoWriter_fourcc(*'XVID')
                 
         #out.release()
-    
-    k = cv2.waitKey(30) & 0xff
+    sleepTime = int(1/fps*950)
+    k = cv2.waitKey(sleepTime) & 0xff
     print(k)
     if k == 27:
         break
