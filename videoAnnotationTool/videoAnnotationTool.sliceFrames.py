@@ -101,7 +101,7 @@ while(1):
             cv2.putText(roiZoom,line,bottomLeftCornerOfText, font,fontScale, fontColor, lineType)
             bottomLeftCornerOfText = (10,bottomLeftCornerOfText[1] + 30)
 
-    # cv2.rectangle(roiZoom, (250,30), (450,200), (0,255,0), 5) # Draw retangle on image..
+    cv2.rectangle(roiZoom, pt1=(700,50), pt2=(450,450), color=(0,255,0), thickness=2, lineType=4) # Draw retangle on image..
     # TODO: Use a floating rectangle to assist in annotating the dataset.
     cv2.imshow("Video", roiZoom)
     #print(roiZoom.shape)
@@ -125,7 +125,7 @@ while(1):
         # fourcc = cv2.VideoWriter_fourcc(*'XVID')
                 
         #out.release()
-    sleepTime = int(1/fps*950)
+    sleepTime = int(1/fps*1000)
     k = cv2.waitKey(sleepTime) & 0xff
     print(k)
     if k == 27:
