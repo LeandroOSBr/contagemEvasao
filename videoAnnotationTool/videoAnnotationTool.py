@@ -16,7 +16,7 @@ import tkinter.ttk as ttk
 rootDir = 'C:\\tmp\PROJETO\\videos\\Amostragem de Evasões em Veículos\\HP\\'
  
 #captura = cv2.VideoCapture(0)
-captura = cv2.VideoCapture(rootDir + 'VR.7. Pular e passar por baixo da catraca.avi')
+captura = cv2.VideoCapture(rootDir + '13. Pular e passar por baixo da catraca.avi')
 length = int(captura.get(cv2.CAP_PROP_FRAME_COUNT))
 fps = captura.get(cv2.CAP_PROP_FPS)
 originalFps = fps

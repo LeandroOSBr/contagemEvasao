@@ -17,11 +17,12 @@ def endFileRecord():
     global startRecord
     global fps
     global out
+    global originalFps
     record = False    
     startRecord = False
     out.release()
     print("Out released")
-    fps = fps*2
+    fps = originalFps
     a = open(fileAnnotation,"a") 
     response = input("Por favor, informe a classe: ")
     if response == 's':
@@ -39,15 +40,38 @@ def startFileRecord():
     global recordFile
     global fps
     global out
+    global originalFps
+    global cropped
+    global roiZoom
     print(startRecord)
     startRecord = True
     strTime = time.strftime("%Y%m%d-%H%M%S")
     fr = 'dataset\\ds_' + strTime + '.avi'
     recordFile = rootDir + fr
     out = cv2.VideoWriter(recordFile,cv2.VideoWriter_fourcc(*'XVID'),int(originalFps),(newW,newH))
-    out.write(roiZoom)
+    cropped = roiZoom[rY:rY+rH, rX:rX+rW]
+    out.write(cropped)
     print("Writing in file out: ",actualFrame)
-    fps = fps/2
+    fps = originalFps/2
+
+def mouse(event,x,y,flags,params):
+    global cv2, roiZoom, move_rectangle,pt1, pt2,color,rX, rY
+    #print("Moused")
+    if event == cv2.EVENT_LBUTTONDOWN:
+        move_rectangle = True
+        print(move_rectangle)        
+    if event == cv2.EVENT_MOUSEMOVE:
+        if move_rectangle:
+            print("X: ", x, "Y: ", y)
+            rX = x
+            rY = y
+            pt1 = (rX,rY)
+            pt2 = (rX+rW, rY+rH)
+            color = (0,0,255)
+    if event == cv2.EVENT_LBUTTONUP:
+        move_rectangle = False
+        print(move_rectangle)
+        color = (0,255,0)
 
 rootDir = 'C:\\tmp\PROJETO\\videos\\Amostragem de Evasões em Veículos\\HP\\'
 #rootDir = 'C:\\Apps\\MESTRADO\\Videos\\'
@@ -69,6 +93,17 @@ pause = 0
 
 countRecordFrame = 0
 countRecordFrameMax = 10
+
+color = (0,255,0)
+
+rX = 400
+rY = 50
+rW = 300
+rH = 400
+pt1 = (rX,rY)
+pt2 = (rX+rW, rY+rH)
+
+move_rectangle = False
 
 out = cv2.VideoWriter()
 k = 0
@@ -101,8 +136,15 @@ while(1):
             cv2.putText(roiZoom,line,bottomLeftCornerOfText, font,fontScale, fontColor, lineType)
             bottomLeftCornerOfText = (10,bottomLeftCornerOfText[1] + 30)
 
-    cv2.rectangle(roiZoom, pt1=(700,50), pt2=(450,450), color=(0,255,0), thickness=2, lineType=4) # Draw retangle on image..
+    cv2.rectangle(roiZoom, pt1=pt1, pt2=pt2, color=color, thickness=2, lineType=4) # Draw retangle on image..
+    
     # TODO: Use a floating rectangle to assist in annotating the dataset.
+
+    cv2.setMouseCallback('Video', mouse)
+
+    cropped = roiZoom[rY:rY+rH, rX:rX+rW]
+    cv2.imshow("Cropped", cropped)
+
     cv2.imshow("Video", roiZoom)
     #print(roiZoom.shape)
 
@@ -110,7 +152,7 @@ while(1):
         if startRecord:
             #global out
             print(startRecord)
-            out.write(roiZoom) 
+            out.write(cropped) 
             print("Writing in file out: ",actualFrame)            
             if countRecordFrame == countRecordFrameMax:
                 startRecord = False
