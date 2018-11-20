@@ -9,6 +9,7 @@ import time
 # Para facilitar escolha do item a ser anotado!
 import tkinter as tk
 import tkinter.ttk as ttk
+import os, sys
 
 import cv2
 
@@ -43,13 +44,16 @@ def startFileRecord():
     global originalFps
     global cropped
     global roiZoom
+    global thicknessLine
+    global captura
     print(startRecord)
     startRecord = True
     strTime = time.strftime("%Y%m%d-%H%M%S")
     fr = 'dataset\\ds_' + strTime + '.avi'
     recordFile = rootDir + fr
-    out = cv2.VideoWriter(recordFile,cv2.VideoWriter_fourcc(*'XVID'),int(originalFps),(newW,newH))
-    cropped = roiZoom[rY:rY+rH, rX:rX+rW]
+    cropped = roiZoom[rY+thicknessLine:rY+rH-thicknessLine, rX+thicknessLine:rX+rW-thicknessLine]
+    cH, cW, cC = cropped.shape
+    out = cv2.VideoWriter(recordFile,cv2.VideoWriter_fourcc(*'XVID'),int(originalFps),(cW,cH))
     out.write(cropped)
     print("Writing in file out: ",actualFrame)
     fps = originalFps/2
@@ -73,19 +77,45 @@ def mouse(event,x,y,flags,params):
         print(move_rectangle)
         color = (0,255,0)
 
+def nextVideo():
+    global captura
+    global length
+    global fps
+    global originalFps
+    global fileList
+    global numFileList
+    print("Next Video")
+    num = len(fileList)
+    if numFileList == num:
+        sys.exit(1)
+
+    captura = cv2.VideoCapture(rootDir + fileList[numFileList])
+    length = int(captura.get(cv2.CAP_PROP_FRAME_COUNT))
+    fps = captura.get(cv2.CAP_PROP_FPS)
+    originalFps = fps
+
+
 rootDir = 'C:\\tmp\PROJETO\\videos\\Amostragem de Evasões em Veículos\\HP\\'
 #rootDir = 'C:\\Apps\\MESTRADO\\Videos\\'
+
+fileList = os.listdir(rootDir)
+
+numFileList = 0
+
+for file in fileList:
+    print(file)
  
-#captura = cv2.VideoCapture(0)
-#captura = cv2.VideoCapture(rootDir + 'VR.7. Pular e passar por baixo da catraca.avi')
-captura = cv2.VideoCapture(rootDir + '13. Pular e passar por baixo da catraca.avi')
-length = int(captura.get(cv2.CAP_PROP_FRAME_COUNT))
-fps = captura.get(cv2.CAP_PROP_FPS)
-originalFps = fps
+#captura = cv2.VideoCapture(rootDir + '13. Pular e passar por baixo da catraca.avi')
+#length = int(captura.get(cv2.CAP_PROP_FRAME_COUNT))
+#fps = captura.get(cv2.CAP_PROP_FPS)
+#originalFps = fps
+
+nextVideo()
+
 record = False
 startRecord = False
-zoom = 2
-printText = False
+zoom = 1
+printText = True
 
 fileAnnotation = rootDir + 'dataset\\' + 'dataset.csv'
 
@@ -96,12 +126,14 @@ countRecordFrameMax = 10
 
 color = (0,255,0)
 
-rX = 400
-rY = 50
-rW = 300
-rH = 400
+rX = 200*zoom
+rY = 25*zoom
+rW = 150*zoom
+rH = 200*zoom
 pt1 = (rX,rY)
 pt2 = (rX+rW, rY+rH)
+
+thicknessLine = 1
 
 move_rectangle = False
 
@@ -113,8 +145,14 @@ while(1):
     if pause == 0:
         #time.sleep(speedVideo)
         ret, frame = captura.read()
+        if not ret:
+            print("Next video")
+            numFileList += 1
+            nextVideo()
+            ret, frame = captura.read()
        
     actualFrame = captura.get(cv2.CAP_PROP_POS_FRAMES)
+    totalFrames = captura.get(cv2.CAP_PROP_FRAME_COUNT)
 
     height, width, channels = frame.shape
 
@@ -122,27 +160,28 @@ while(1):
     roiZoom = cv2.resize(frame, (width*zoom, height*zoom), interpolation=cv2.INTER_LANCZOS4)
 
     font = cv2.FONT_HERSHEY_SIMPLEX
-    bottomLeftCornerOfText = (10,10)
-    fontScale = 0.125*zoom
-    fontColor = (255,255,255)
-    lineType = 0
+    bottomLeftCornerOfText = (10,100)
+    fontScale = 0.400*zoom
+    fontColor = (0,0,0)
+    lineType = 2
     newH, newW, newC = roiZoom.shape
 
     if printText:
-        text = 'FPS: ' + str(fps) + '('+ str(originalFps) + ')' + '\nActual Frame: ' + str(actualFrame) + ' \nH: ' + str(newH) + ', W: ' + str(newW)
+        text = 'FPS: ' + str(fps) + '('+ str(originalFps) + ')' + '\nFrame: ' + str(actualFrame) + "/" + str(totalFrames) + ' \nH: ' + str(newH) + ', W: ' + str(newW) + "\nFile: " + fileList[numFileList]
         if record:
             text += '\nREC'    
         for i, line in enumerate(text.split('\n')):
             cv2.putText(roiZoom,line,bottomLeftCornerOfText, font,fontScale, fontColor, lineType)
-            bottomLeftCornerOfText = (10,bottomLeftCornerOfText[1] + 30)
+            bottomLeftCornerOfText = (10,bottomLeftCornerOfText[1] + 20)
+        
 
-    cv2.rectangle(roiZoom, pt1=pt1, pt2=pt2, color=color, thickness=2, lineType=4) # Draw retangle on image..
+    cv2.rectangle(roiZoom, pt1=pt1, pt2=pt2, color=color, thickness=thicknessLine, lineType=4) # Draw retangle on image..
     
     # TODO: Use a floating rectangle to assist in annotating the dataset.
 
     cv2.setMouseCallback('Video', mouse)
 
-    cropped = roiZoom[rY:rY+rH, rX:rX+rW]
+    cropped = roiZoom[rY+thicknessLine:rY+rH-thicknessLine, rX+thicknessLine:rX+rW-thicknessLine]
     cv2.imshow("Cropped", cropped)
 
     cv2.imshow("Video", roiZoom)
