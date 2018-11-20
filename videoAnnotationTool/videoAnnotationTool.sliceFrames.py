@@ -7,9 +7,10 @@
 
 import time
 # Para facilitar escolha do item a ser anotado!
-import tkinter as tk
-import tkinter.ttk as ttk
-import os, sys
+#import tkinter as tk
+#import tkinter.ttk as ttk
+import easygui
+import os, sys, glob
 
 import cv2
 
@@ -24,8 +25,11 @@ def endFileRecord():
     out.release()
     print("Out released")
     fps = originalFps
-    a = open(fileAnnotation,"a") 
-    response = input("Por favor, informe a classe: ")
+    a = open(fileAnnotation,"a")
+
+    response = easygui.enterbox("Insert the Class: s (Sim, Pulou catraca) ou n (Não pulou catraca?")
+
+    # response = input("Por favor, informe a classe: ")
     if response == 's':
         txtFile = '\nSimPulouCatraca' + ';' + fr
         a.write(txtFile)
@@ -84,21 +88,23 @@ def nextVideo():
     global originalFps
     global fileList
     global numFileList
-    print("Next Video")
+    print("Next Video is: ", fileList[numFileList])
     num = len(fileList)
     if numFileList == num:
         sys.exit(1)
 
-    captura = cv2.VideoCapture(rootDir + fileList[numFileList])
+    #captura = cv2.VideoCapture(rootDir + fileList[numFileList])
+    captura = cv2.VideoCapture(fileList[numFileList])
     length = int(captura.get(cv2.CAP_PROP_FRAME_COUNT))
     fps = captura.get(cv2.CAP_PROP_FPS)
     originalFps = fps
 
 
-rootDir = 'C:\\tmp\PROJETO\\videos\\Amostragem de Evasões em Veículos\\HP\\'
-#rootDir = 'C:\\Apps\\MESTRADO\\Videos\\'
+#rootDir = 'C:\\tmp\PROJETO\\videos\\Amostragem de Evasões em Veículos\\HP\\'
+rootDir = 'C:\\Apps\\MESTRADO\\Videos\\'
 
-fileList = os.listdir(rootDir)
+#fileList = os.listdir(rootDir)
+fileList = glob.glob(rootDir+'*.avi')
 
 numFileList = 0
 
@@ -146,7 +152,7 @@ while(1):
         #time.sleep(speedVideo)
         ret, frame = captura.read()
         if not ret:
-            print("Next video")
+            print("Go to Next video...")
             numFileList += 1
             nextVideo()
             ret, frame = captura.read()
@@ -162,12 +168,13 @@ while(1):
     font = cv2.FONT_HERSHEY_SIMPLEX
     bottomLeftCornerOfText = (10,100)
     fontScale = 0.400*zoom
-    fontColor = (0,0,0)
-    lineType = 2
+    fontColor = (0,255,0)
+    lineType = 1
     newH, newW, newC = roiZoom.shape
 
     if printText:
-        text = 'FPS: ' + str(fps) + '('+ str(originalFps) + ')' + '\nFrame: ' + str(actualFrame) + "/" + str(totalFrames) + ' \nH: ' + str(newH) + ', W: ' + str(newW) + "\nFile: " + fileList[numFileList]
+        #text = 'FPS: ' + str(fps) + '('+ str(originalFps) + ')' + '\nFrame: ' + str(actualFrame) + "/" + str(totalFrames) + ' \nH: ' + str(newH) + ', W: ' + str(newW) + "\nFile: " + fileList[numFileList]
+        text = 'FPS: ' + str(fps) + '('+ str(originalFps) + ')' + '\nFrame: ' + str(actualFrame) + "/" + str(totalFrames) + ' \nH: ' + str(newH) + ', W: ' + str(newW)
         if record:
             text += '\nREC'    
         for i, line in enumerate(text.split('\n')):
@@ -208,7 +215,8 @@ while(1):
         #out.release()
     sleepTime = int(1/fps*1000)
     k = cv2.waitKey(sleepTime) & 0xff
-    print(k)
+    if k != 255:
+        print(k)
     if k == 27:
         break
     elif k == 32:
@@ -224,6 +232,13 @@ while(1):
         if actualFrame > perFrames:
             captura.set(cv2.CAP_PROP_POS_FRAMES,actualFrame - perFrames)
             cv2.imshow("Video", roiZoom)
+    elif k == 54:
+        #NumPad #6
+        print(k)
+        perFrames = 20
+        if actualFrame < totalFrames:
+            captura.set(cv2.CAP_PROP_POS_FRAMES,actualFrame + perFrames)
+            cv2.imshow("Video", roiZoom)            
     elif k == 45:
         #NumPad (-)
         print(k)
