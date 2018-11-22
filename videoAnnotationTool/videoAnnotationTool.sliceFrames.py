@@ -2,8 +2,9 @@
 #   [ESC]: Exit
 #   [SPACE BAR]: Pause
 #   [NumPad #4]: Back any frames
-#   [NumPad -]: Diminui FPS
-#   [Num Pad +]: Aumenta FPS
+#   [NumPad #6]: Foward any frames
+#   [NumPad -]: Down FPS
+#   [Num Pad +]: Up FPS
 
 import time
 # Para facilitar escolha do item a ser anotado!
