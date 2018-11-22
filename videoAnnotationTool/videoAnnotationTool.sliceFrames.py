@@ -55,7 +55,7 @@ def startFileRecord():
     startRecord = True
     strTime = time.strftime("%Y%m%d-%H%M%S")
     fr = 'dataset\\ds_' + strTime + '.avi'
-    recordFile = rootDir + fr
+    recordFile = rootDirDataset + fr
     cropped = roiZoom[rY+thicknessLine:rY+rH-thicknessLine, rX+thicknessLine:rX+rW-thicknessLine]
     cH, cW, cC = cropped.shape
     out = cv2.VideoWriter(recordFile,cv2.VideoWriter_fourcc(*'XVID'),int(originalFps),(cW,cH))
@@ -102,10 +102,11 @@ def nextVideo():
 
 
 #rootDir = 'C:\\tmp\PROJETO\\videos\\Amostragem de Evasões em Veículos\\HP\\'
-rootDir = 'C:\\Apps\\MESTRADO\\Videos\\'
+rootDirVideos = 'C:\\Apps\\MESTRADO\\videos\\1. Hp - Abril\\'
+rootDirDataset = 'C:\\Apps\\MESTRADO\\Videos\\'
 
 #fileList = os.listdir(rootDir)
-fileList = glob.glob(rootDir+'*.avi')
+fileList = glob.glob(rootDirVideos +'*.avi')
 
 numFileList = 0
 
@@ -124,7 +125,7 @@ startRecord = False
 zoom = 1
 printText = True
 
-fileAnnotation = rootDir + 'dataset\\' + 'dataset.csv'
+fileAnnotation = rootDirDataset + 'dataset\\' + 'dataset.csv'
 
 pause = 0
 
