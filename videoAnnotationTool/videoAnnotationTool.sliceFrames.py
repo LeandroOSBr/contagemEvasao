@@ -2,7 +2,7 @@
 #   [ESC]: Exit
 #   [SPACE BAR]: Pause
 #   [NumPad #4]: Back any frames
-#   [NumPad #6]: Foward any frames
+#   [NumPad #6]: Forward any frames
 #   [NumPad -]: Down FPS
 #   [Num Pad +]: Up FPS
 
