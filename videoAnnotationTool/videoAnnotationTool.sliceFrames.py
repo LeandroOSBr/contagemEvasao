@@ -12,6 +12,7 @@ import time
 #import tkinter.ttk as ttk
 import easygui
 import os, sys, glob
+import pandas as pd
 
 import cv2
 
@@ -72,8 +73,14 @@ def mouse(event,x,y,flags,params):
     if event == cv2.EVENT_MOUSEMOVE:
         if move_rectangle:
             print("X: ", x, "Y: ", y)
-            rX = x
-            rY = y
+            if x >= 0:
+                rX = x
+            else:
+                rX = 0
+            if y >= 0:
+                rY = y
+            else:
+                rY = 0
             pt1 = (rX,rY)
             pt2 = (rX+rW, rY+rH)
             color = (0,0,255)
@@ -102,7 +109,7 @@ def nextVideo():
 
 
 #rootDir = 'C:\\tmp\PROJETO\\videos\\Amostragem de Evasões em Veículos\\HP\\'
-rootDirVideos = 'C:\\Apps\\MESTRADO\\videos\\1. Hp - Abril\\'
+rootDirVideos = 'C:\\Apps\\MESTRADO\\Videos\\2. Hp - Maio\\'
 rootDirDataset = 'C:\\Apps\\MESTRADO\\Videos\\'
 
 #fileList = os.listdir(rootDir)
@@ -149,6 +156,21 @@ out = cv2.VideoWriter()
 k = 0
 
 while(1):
+
+    dataA = pd.read_csv(fileAnnotation,sep=';').to_dict(orient="row")
+    dataClassSimPulaCatraca = []
+    dataClassNaoPulaCatraca = []
+    for dataR in dataA:
+        if dataR['class'] == 'NaoPulouCatraca':
+            dataClassNaoPulaCatraca.append(dataR['file'])
+        if dataR['class'] == 'SimPulouCatraca':
+            dataClassSimPulaCatraca.append(dataR['file'])
+    print("Anotacao - NAO Pulou Catraca", len(dataClassNaoPulaCatraca))
+    print("Anotacao - SIM Pulou Catraca", len(dataClassSimPulaCatraca))
+    print("-------------------------------------")
+    print("TOTAL: ",len(dataClassNaoPulaCatraca) + len(dataClassSimPulaCatraca))
+
+
     speedVideo = 1/fps
     if pause == 0:
         #time.sleep(speedVideo)
@@ -165,8 +187,9 @@ while(1):
     height, width, channels = frame.shape
 
     roiZoom = frame
-    roiZoom = cv2.resize(frame, (width*zoom, height*zoom), interpolation=cv2.INTER_LANCZOS4)
-
+    if zoom>0:
+        roiZoom = cv2.resize(frame, (width*zoom, height*zoom), interpolation=cv2.INTER_LANCZOS4)
+    
     font = cv2.FONT_HERSHEY_SIMPLEX
     bottomLeftCornerOfText = (10,100)
     fontScale = 0.400*zoom
