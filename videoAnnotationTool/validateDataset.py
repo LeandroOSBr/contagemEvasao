@@ -6,7 +6,7 @@ limparArquivosNaoAnotado = True
 limparArquivosNao11Quadros = True
 
 rootDirDataset = 'C:\\Apps\\MESTRADO\\Videos\\'
-fileAnnotation = rootDirDataset + 'dataset\\' + 'dataset.csv'
+fileAnnotation = rootDirDataset + 'dataset\\' + 'dataset_w_originalfile_position_roi.csv'
 
 # Lista arquivos anotados que são inexistentes:
 dataA = pd.read_csv(fileAnnotation,sep=';').to_dict(orient="row")

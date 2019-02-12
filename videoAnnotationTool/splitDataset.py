@@ -3,15 +3,15 @@ import pandas as pd
 import random
 
 rootDirDataset = 'C:\\Apps\\MESTRADO\\Videos\\'
-fileAnnotation = rootDirDataset + 'dataset\\' + 'dataset.csv'
+fileAnnotation = rootDirDataset + 'dataset\\' + 'dataset_w_originalfile_position_roi.csv'
 
 dirTrain = rootDirDataset + 'dataset\\' + 'train'
 dirVal = rootDirDataset + 'dataset\\' + 'val'
-dirTest = rootDirDataset + 'dataset\\' + 'test'
+dirTest = rootDirDataset + 'dataset\\' + 'test_real'
 
-txTrain = 0.7
-txVal = 0.2
-txTest = 0.1
+txTrain = 0.0
+txVal = 0.0
+txTest = 1.0
 
 for d in [dirTrain, dirTrain+'\\SimPulaCatraca', dirTrain+'\\NaoPulaCatraca', dirVal, dirVal+'\\SimPulaCatraca', dirVal+'\\NaoPulaCatraca', dirTest,dirTest+'\\SimPulaCatraca', dirTest+'\\NaoPulaCatraca']:
     try:

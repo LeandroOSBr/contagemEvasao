@@ -5,6 +5,9 @@
 #   [NumPad #6]: Forward any frames
 #   [NumPad -]: Down FPS
 #   [Num Pad +]: Up FPS
+#   [r]: Start video record
+#   [n]: Next video
+#   [p]: Previus video
 
 import time
 # Para facilitar escolha do item a ser anotado!
@@ -22,24 +25,36 @@ def endFileRecord():
     global fps
     global out
     global originalFps
+    global dataClassNaoPulaCatraca
+    global dataClassSimPulaCatraca
+    global fileList
+    global numFileList
+    global pt1
+    global pt2
+    global actualFrame
     record = False    
     startRecord = False
     out.release()
-    print("Out released")
+    #print("Out released")
     fps = originalFps
-    a = open(fileAnnotation,"a")
+    a = open(fileAnnotation,"a+")
 
     response = easygui.enterbox("Insert the Class: s (Sim, Pulou catraca) ou n (Não pulou catraca?")
 
     # response = input("Por favor, informe a classe: ")
     if response == 's':
-        txtFile = '\nSimPulouCatraca' + ';' + fr
+        txtFile = '\nSimPulouCatraca' + ';' + fr + ';' + str(actualFrame) + ';' + str(fileList[numFileList]) + ';' + str(pt1) + ';' + str(pt2)
         a.write(txtFile)
         a.close
     elif response == 'n':
-        txtFile = '\nNaoPulouCatraca' + ';' + fr
+        txtFile = '\nNaoPulouCatraca' + ';' + fr + ';' + str(actualFrame) + ';' + str(fileList[numFileList]) + ';' + str(pt1) + ';' + str(pt2)
         a.write(txtFile)
         a.close
+    
+    print("Anotacao - NAO Pulou Catraca", len(dataClassNaoPulaCatraca))
+    print("Anotacao - SIM Pulou Catraca", len(dataClassSimPulaCatraca))
+    print("-------------------------------------")
+    print("TOTAL: ",len(dataClassNaoPulaCatraca) + len(dataClassSimPulaCatraca))
 
 def startFileRecord():
     global startRecord
@@ -52,7 +67,7 @@ def startFileRecord():
     global roiZoom
     global thicknessLine
     global captura
-    print(startRecord)
+    #print(startRecord)
     startRecord = True
     strTime = time.strftime("%Y%m%d-%H%M%S")
     fr = 'dataset\\ds_' + strTime + '.avi'
@@ -61,7 +76,7 @@ def startFileRecord():
     cH, cW, cC = cropped.shape
     out = cv2.VideoWriter(recordFile,cv2.VideoWriter_fourcc(*'XVID'),int(originalFps),(cW,cH))
     out.write(cropped)
-    print("Writing in file out: ",actualFrame)
+    #print("Writing in file out: ",actualFrame)
     fps = originalFps/2
 
 def mouse(event,x,y,flags,params):
@@ -69,10 +84,10 @@ def mouse(event,x,y,flags,params):
     #print("Moused")
     if event == cv2.EVENT_LBUTTONDOWN:
         move_rectangle = True
-        print(move_rectangle)        
+        #print(move_rectangle)        
     if event == cv2.EVENT_MOUSEMOVE:
         if move_rectangle:
-            print("X: ", x, "Y: ", y)
+            #print("X: ", x, "Y: ", y)
             if x >= 0:
                 rX = x
             else:
@@ -86,7 +101,7 @@ def mouse(event,x,y,flags,params):
             color = (0,0,255)
     if event == cv2.EVENT_LBUTTONUP:
         move_rectangle = False
-        print(move_rectangle)
+        #print(move_rectangle)
         color = (0,255,0)
 
 def nextVideo():
@@ -98,7 +113,8 @@ def nextVideo():
     global numFileList
     print("Next Video is: ", fileList[numFileList])
     num = len(fileList)
-    if numFileList == num:
+    if numFileList == num - 1:
+        print("End of List")
         sys.exit(1)
 
     #captura = cv2.VideoCapture(rootDir + fileList[numFileList])
@@ -109,16 +125,18 @@ def nextVideo():
 
 
 #rootDir = 'C:\\tmp\PROJETO\\videos\\Amostragem de Evasões em Veículos\\HP\\'
-rootDirVideos = 'C:\\Apps\\MESTRADO\\Videos\\2. Hp - Maio\\'
+#rootDirVideos = 'C:\\Apps\\MESTRADO\\Videos\\REUNIDAS\\04. Julho\\'
+rootDirVideos = 'C:\\Apps\\MESTRADO\\FAICON\\data\\production\\'
 rootDirDataset = 'C:\\Apps\\MESTRADO\\Videos\\'
 
 #fileList = os.listdir(rootDir)
 fileList = glob.glob(rootDirVideos +'*.avi')
-
+print("Found", len(fileList)," file(s) in this folder.")
 numFileList = 0
 
 for file in fileList:
-    print(file)
+    pass
+    #print(file)
  
 #captura = cv2.VideoCapture(rootDir + '13. Pular e passar por baixo da catraca.avi')
 #length = int(captura.get(cv2.CAP_PROP_FRAME_COUNT))
@@ -132,7 +150,7 @@ startRecord = False
 zoom = 1
 printText = True
 
-fileAnnotation = rootDirDataset + 'dataset\\' + 'dataset.csv'
+fileAnnotation = rootDirDataset + 'dataset\\' + 'dataset_w_originalfile_position_roi.csv'
 
 pause = 0
 
@@ -156,19 +174,23 @@ out = cv2.VideoWriter()
 k = 0
 
 while(1):
-
-    dataA = pd.read_csv(fileAnnotation,sep=';').to_dict(orient="row")
     dataClassSimPulaCatraca = []
     dataClassNaoPulaCatraca = []
-    for dataR in dataA:
-        if dataR['class'] == 'NaoPulouCatraca':
-            dataClassNaoPulaCatraca.append(dataR['file'])
-        if dataR['class'] == 'SimPulouCatraca':
-            dataClassSimPulaCatraca.append(dataR['file'])
-    print("Anotacao - NAO Pulou Catraca", len(dataClassNaoPulaCatraca))
-    print("Anotacao - SIM Pulou Catraca", len(dataClassSimPulaCatraca))
-    print("-------------------------------------")
-    print("TOTAL: ",len(dataClassNaoPulaCatraca) + len(dataClassSimPulaCatraca))
+    try:
+        dataA = pd.read_csv(fileAnnotation,sep=';').to_dict(orient="row")
+        dataClassSimPulaCatraca = []
+        dataClassNaoPulaCatraca = []
+        for dataR in dataA:
+            if dataR['class'] == 'NaoPulouCatraca':
+                dataClassNaoPulaCatraca.append(dataR['file'])
+            if dataR['class'] == 'SimPulouCatraca':
+                dataClassSimPulaCatraca.append(dataR['file'])
+    except:
+        print("Ainda não há anotação...")
+    #print("Anotacao - NAO Pulou Catraca", len(dataClassNaoPulaCatraca))
+    #print("Anotacao - SIM Pulou Catraca", len(dataClassSimPulaCatraca))
+    #print("-------------------------------------")
+    #print("TOTAL: ",len(dataClassNaoPulaCatraca) + len(dataClassSimPulaCatraca))
 
 
     speedVideo = 1/fps
@@ -176,7 +198,7 @@ while(1):
         #time.sleep(speedVideo)
         ret, frame = captura.read()
         if not ret:
-            print("Go to Next video...")
+            #print("Go to Next video...")
             numFileList += 1
             nextVideo()
             ret, frame = captura.read()
@@ -199,7 +221,7 @@ while(1):
 
     if printText:
         #text = 'FPS: ' + str(fps) + '('+ str(originalFps) + ')' + '\nFrame: ' + str(actualFrame) + "/" + str(totalFrames) + ' \nH: ' + str(newH) + ', W: ' + str(newW) + "\nFile: " + fileList[numFileList]
-        text = 'FPS: ' + str(fps) + '('+ str(originalFps) + ')' + '\nFrame: ' + str(actualFrame) + "/" + str(totalFrames) + ' \nH: ' + str(newH) + ', W: ' + str(newW)
+        text = 'FPS: ' + str(fps) + '('+ str(originalFps) + ')' + '\nFrame: ' + str(actualFrame) + "/" + str(totalFrames) + ' \nH: ' + str(newH) + ', W: ' + str(newW) + '\nFile: ' + str(numFileList) + '(' + str(len(fileList)) +  ')'
         if record:
             text += '\nREC'    
         for i, line in enumerate(text.split('\n')):
@@ -222,7 +244,7 @@ while(1):
     if record:
         if startRecord:
             #global out
-            print(startRecord)
+            #print(startRecord)
             out.write(cropped) 
             print("Writing in file out: ",actualFrame)            
             if countRecordFrame == countRecordFrameMax:
@@ -241,41 +263,55 @@ while(1):
     sleepTime = int(1/fps*1000)
     k = cv2.waitKey(sleepTime) & 0xff
     if k != 255:
-        print(k)
+        pass
+        #print(k)
     if k == 27:
         break
     elif k == 32:
-        print(k)
+        #print(k)
         if pause == 1:
             pause = 0
         else:
             pause = 1
     elif k == 52:
         #NumPad #4
-        print(k)
+        #print(k)
         perFrames = 20
         if actualFrame > perFrames:
             captura.set(cv2.CAP_PROP_POS_FRAMES,actualFrame - perFrames)
             cv2.imshow("Video", roiZoom)
     elif k == 54:
         #NumPad #6
-        print(k)
+        #print(k)
         perFrames = 20
         if actualFrame < totalFrames:
             captura.set(cv2.CAP_PROP_POS_FRAMES,actualFrame + perFrames)
             cv2.imshow("Video", roiZoom)            
     elif k == 45:
         #NumPad (-)
-        print(k)
+        #print(k)
         if fps > 0:
             fps -= 1
     elif k == 43:
         #NumPad (+)
-        print(k)
+        #print(k)
         fps += 1
+    elif k == 110:
+        #n
+        #print(k)
+        numFileList += 1
+        nextVideo()
+    elif k == 112:
+         #p
+        #print(k)
+        if numFileList == 0:
+            pass
+        else:
+            numFileList -= 1
+        nextVideo()
     elif k == 114:
         #R
-        print(k)
+        #print(k)
         if record:
             endFileRecord()
         else:
